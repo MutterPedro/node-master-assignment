@@ -1,18 +1,18 @@
 const http = require('http');
 const url = require('url');
 
-const server = http.createServer((req,res) => {
-	const parsedUrl = url.parse(req.url, true);
-	const path = parsedUrl.pathname;
-  	const trimmedPath = path.replace(/^\/+|\/+$/g, '');
+const server = http.createServer((req, res) => {
+  const parsedUrl = url.parse(req.url, true);
+  const path = parsedUrl.pathname;
+  const trimmedPath = path.replace(/^\/+|\/+$/g, '');
 
-  	const route = router[trimmedPath] || handlers.notFound;
+  const route = router[trimmedPath] || handlers.notFound;
 
-  	return route().then(({status, data}) => {
-  		res.setHeader('Content-Type', 'application/json');
-        res.writeHead(status);
-        res.end(JSON.stringify(data));
-  	});
+  return route().then(({ status, data }) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.writeHead(status);
+    res.end(JSON.stringify(data));
+  });
 });
 
 const PORT = 3000;
@@ -23,21 +23,20 @@ server.listen(PORT, () => {
 const handlers = {};
 
 handlers.hello = () => {
-    return Promise.resolve({
-    	status: 200,
-		  data: {
-        greet: 'Hello World!'
-      }
-    });
+  return Promise.resolve({
+    status: 200,
+    data: {
+      greet: 'Hello World!',
+    },
+  });
 };
-
 
 handlers.notFound = () => {
   return Promise.resolve({
-    	status: 404
-    });
+    status: 404,
+  });
 };
 
 const router = {
-  'hello' : handlers.hello
+  hello: handlers.hello,
 };
