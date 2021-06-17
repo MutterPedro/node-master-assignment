@@ -1,4 +1,4 @@
-const { createUser, updateUser } = require('./user');
+const { createUser, updateUser, deleteUser } = require('./user');
 
 const handlers = {
   get: {},
@@ -8,7 +8,9 @@ const handlers = {
   put: {
     user: updateUser,
   },
-  delete: {},
+  delete: {
+    user: deleteUser,
+  },
 };
 
 handlers.notFound = () => {

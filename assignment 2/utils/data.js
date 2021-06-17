@@ -14,7 +14,7 @@ function initFolder() {
   }
 }
 
-async function insert(file, data) {
+function insert(file, data) {
   const id = generateId();
   const parsedData = JSON.stringify({ ...data, id });
 
@@ -31,7 +31,7 @@ async function insert(file, data) {
   });
 }
 
-async function update(file, id, data) {
+function update(file, id, data) {
   const path = buildPath(file, id);
   if (!fs.existsSync(path)) {
     return null;
@@ -61,4 +61,23 @@ async function update(file, id, data) {
   });
 }
 
-module.exports = { insert, initFolder, update };
+function destroy(file, id) {
+  const path = buildPath(file, id);
+  if (!fs.existsSync(path)) {
+    return false;
+  }
+
+  return new Promise((resolve, reject) => {
+    fs.unlink(path, (err) => {
+      if (err) {
+        reject(err);
+
+        return;
+      }
+
+      resolve(true);
+    });
+  });
+}
+
+module.exports = { insert, initFolder, update, destroy };
