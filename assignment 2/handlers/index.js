@@ -1,11 +1,13 @@
-const { createUser } = require('./user');
+const { createUser, updateUser } = require('./user');
 
 const handlers = {
   get: {},
   post: {
     user: createUser,
   },
-  put: {},
+  put: {
+    user: updateUser,
+  },
   delete: {},
 };
 
