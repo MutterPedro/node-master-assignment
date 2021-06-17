@@ -1,6 +1,10 @@
+const { createUser } = require('./user');
+
 const handlers = {
   get: {},
-  post: {},
+  post: {
+    user: createUser,
+  },
   put: {},
   delete: {},
 };
