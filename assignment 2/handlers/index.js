@@ -1,8 +1,11 @@
+const { login, logout } = require('./auth');
 const { createUser, updateUser, deleteUser } = require('./user');
 
 const handlers = {
   get: {},
   post: {
+    login,
+    logout,
     user: createUser,
   },
   put: {
