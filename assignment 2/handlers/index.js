@@ -1,8 +1,11 @@
 const { login, logout } = require('./auth');
+const { getItems, addItem } = require('./items');
 const { createUser, updateUser, deleteUser } = require('./user');
 
 const handlers = {
-  get: {},
+  get: {
+    items: getItems,
+  },
   post: {
     login,
     logout,
@@ -10,6 +13,7 @@ const handlers = {
   },
   put: {
     user: updateUser,
+    item: addItem,
   },
   delete: {
     user: deleteUser,

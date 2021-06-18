@@ -2,6 +2,7 @@ const Files = require('../enums/Files');
 const { insert, destroy } = require('../utils/data');
 const { toBase64 } = require('../utils/encode');
 const { extractBody } = require('../utils/request');
+const { isLoggedIn } = require('../utils/session');
 const { generateToken } = require('../utils/token');
 const { getUserByEmail } = require('./user');
 
@@ -32,8 +33,7 @@ async function login(req) {
 }
 
 async function logout(req) {
-  const token = (req.headers['authorization'] || '').replace('Bearer ', '');
-  if (!token) {
+  if (!(await isLoggedIn(req))) {
     return {
       status: 422,
       data: { message: 'already logged out' },
