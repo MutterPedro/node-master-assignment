@@ -20,8 +20,7 @@ function initFolder() {
   });
 }
 
-function insert(file, data, indexBy) {
-  const id = generateId();
+function insert(file, data, id = generateId()) {
   const parsedData = JSON.stringify({ ...data, id });
 
   return new Promise((resolve, reject) => {
@@ -32,24 +31,12 @@ function insert(file, data, indexBy) {
         return;
       }
 
-      if (indexBy) {
-        fs.writeFile(buildPath(file, indexBy), parsedData, (err) => {
-          if (err) {
-            reject(err);
-
-            return;
-          }
-
-          resolve(JSON.parse(parsedData));
-        });
-      } else {
-        resolve(JSON.parse(parsedData));
-      }
+      resolve(JSON.parse(parsedData));
     });
   });
 }
 
-function update(file, id, data, indexBy) {
+function update(file, id, data) {
   const path = buildPath(file, id);
   if (!fs.existsSync(path)) {
     return null;
@@ -73,29 +60,13 @@ function update(file, id, data, indexBy) {
           return;
         }
 
-        if (indexBy) {
-          fs.writeFile(
-            buildPath(file, indexBy),
-            JSON.stringify(updatedData),
-            (err) => {
-              if (err) {
-                reject(err);
-
-                return;
-              }
-
-              resolve(updatedData);
-            },
-          );
-        } else {
-          resolve(updatedData);
-        }
+        resolve(updatedData);
       });
     });
   });
 }
 
-function destroy(file, id, indexBy) {
+function destroy(file, id) {
   const path = buildPath(file, id);
   if (!fs.existsSync(path)) {
     return false;
@@ -109,19 +80,7 @@ function destroy(file, id, indexBy) {
         return;
       }
 
-      if (indexBy) {
-        fs.unlink(buildPath(file, indexBy), (err) => {
-          if (err) {
-            reject(err);
-
-            return;
-          }
-
-          resolve(true);
-        });
-      } else {
-        resolve(true);
-      }
+      resolve(true);
     });
   });
 }

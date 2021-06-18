@@ -1,5 +1,6 @@
 const Files = require('../enums/Files');
 const { insert, update, destroy, findOne } = require('../utils/data');
+const { toBase64 } = require('../utils/encode');
 const { extractBody } = require('../utils/request');
 
 async function createUser(req) {
@@ -12,7 +13,7 @@ async function createUser(req) {
   }
 
   const user = { name, email, address, password };
-  const newUser = await insert(Files.User, user, email);
+  const newUser = await insert(Files.User, user, toBase64(email));
 
   return {
     status: 201,
@@ -21,28 +22,26 @@ async function createUser(req) {
 }
 
 async function updateUser(req) {
-  const { id, name, address } = await extractBody(req);
-  if (!id) {
+  const { email, name, address } = await extractBody(req);
+  if (!email) {
     return {
       status: 422,
       data: { message: 'invalid parameters' },
     };
   }
 
-  const user = await getUserById(id);
+  const user = await getUserByEmail(email);
   if (!user) {
     return {
       status: 422,
-      data: { message: 'invalid user ID' },
+      data: { message: 'invalid user email' },
     };
   }
 
-  const updatedUser = await update(
-    Files.User,
-    id,
-    { name, address },
-    user.email,
-  );
+  const updatedUser = await update(Files.User, toBase64(email), {
+    name,
+    address,
+  });
 
   return {
     status: 200,
@@ -51,23 +50,21 @@ async function updateUser(req) {
 }
 
 async function deleteUser(req) {
-  const { id } = await extractBody(req);
-  if (!id) {
+  const { email } = await extractBody(req);
+  if (!email) {
     return {
       status: 422,
       data: { message: 'invalid parameters' },
     };
   }
 
-  const user = await getUserById(id);
-  if (!user) {
+  const success = await destroy(Files.User, toBase64(email));
+  if (!success) {
     return {
       status: 422,
-      data: { message: 'invalid user ID' },
+      data: { message: 'invalid parameters' },
     };
   }
-
-  await destroy(Files.User, id, user.email);
 
   return {
     status: 204,
@@ -79,7 +76,7 @@ async function getUserById(id) {
 }
 
 async function getUserByEmail(email) {
-  return findOne(Files.User, email);
+  return findOne(Files.User, toBase64(email));
 }
 
 module.exports = {

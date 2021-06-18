@@ -1,5 +1,6 @@
 const Files = require('../enums/Files');
 const { insert, destroy } = require('../utils/data');
+const { toBase64 } = require('../utils/encode');
 const { extractBody } = require('../utils/request');
 const { generateToken } = require('../utils/token');
 const { getUserByEmail } = require('./user');
@@ -22,7 +23,7 @@ async function login(req) {
   }
 
   const token = generateToken();
-  await insert(Files.Token, { token }, Buffer.from(token).toString('base64'));
+  await insert(Files.Token, { token }, toBase64(token));
 
   return {
     status: 200,
@@ -39,7 +40,7 @@ async function logout(req) {
     };
   }
 
-  await destroy(Files.Token, Buffer.from(token).toString('base64'));
+  await destroy(Files.Token, toBase64(token));
 
   return {
     status: 204,
