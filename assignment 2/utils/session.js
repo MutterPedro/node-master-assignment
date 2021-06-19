@@ -13,7 +13,7 @@ async function isLoggedIn(req) {
   }
 
   const savedToken = await findOne(Files.Token, toBase64(token));
-  return !!savedToken;
+  return savedToken;
 }
 
 module.exports = { isLoggedIn, extractSessionToken };

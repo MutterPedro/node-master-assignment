@@ -24,7 +24,7 @@ async function login(req) {
   }
 
   const token = generateToken();
-  await insert(Files.Token, { token }, toBase64(token));
+  await insert(Files.Token, { token, email }, toBase64(token));
 
   return {
     status: 200,

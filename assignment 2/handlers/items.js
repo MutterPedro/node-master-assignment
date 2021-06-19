@@ -1,6 +1,7 @@
 const Files = require('../enums/Files');
 const Items = require('../enums/Items');
 const { findOne, insert, update, destroy } = require('../utils/data');
+const { sendEmail } = require('../utils/email');
 const { toBase64 } = require('../utils/encode');
 const { charge } = require('../utils/payment');
 const { extractBody } = require('../utils/request');
@@ -61,7 +62,8 @@ async function addItem(req) {
 }
 
 async function checkout(req) {
-  if (!(await isLoggedIn(req))) {
+  const token = await isLoggedIn(req);
+  if (!token) {
     return {
       status: 401,
       data: { message: 'need to be logged in' },
@@ -78,6 +80,15 @@ async function checkout(req) {
   }
 
   const result = await charge(cart.total);
+  await sendEmail(
+    token.email,
+    'Order confirmed!',
+    `Congratulations! 
+  
+  Your order ${Object.keys(cart.items)} is confirmed!
+  Total: ${cart.total} USD`,
+  );
+
   await destroy(Files.Cart, id);
 
   return {
