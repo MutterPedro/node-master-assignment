@@ -1,4 +1,5 @@
-const Length = process.env.TOKEN_LENGTH || 50;
+const { TOKEN_LENGTH } = require('./environment');
+
 const AllowedChars =
   '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -7,7 +8,7 @@ function randomNumber(min, max) {
 }
 
 function generateToken() {
-  return Array.from(new Array(Length)).reduce(
+  return Array.from(new Array(TOKEN_LENGTH)).reduce(
     (token) => token + AllowedChars[randomNumber(0, AllowedChars.length)],
     '',
   );

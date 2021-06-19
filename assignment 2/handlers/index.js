@@ -1,5 +1,5 @@
 const { login, logout } = require('./auth');
-const { getItems, addItem } = require('./items');
+const { getItems, addItem, checkout } = require('./items');
 const { createUser, updateUser, deleteUser } = require('./user');
 
 const handlers = {
@@ -9,6 +9,7 @@ const handlers = {
   post: {
     login,
     logout,
+    checkout,
     user: createUser,
   },
   put: {

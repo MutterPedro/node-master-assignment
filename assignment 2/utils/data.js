@@ -1,21 +1,21 @@
 const fs = require('fs');
 const { join } = require('path');
-const Files = require('../enums/Files');
 
-const location = process.env.DATA_DIR || 'data';
+const Files = require('../enums/Files');
+const { DATA_DIR } = require('./environment');
 
 function generateId() {
   return `${Date.now()}-${Math.floor((Math.random() + 1) * 10e10)}`;
 }
 
 function buildPath(file, id) {
-  return join(location, file, id);
+  return join(DATA_DIR, file, id);
 }
 
 function initFolder() {
   Object.values(Files).forEach((file) => {
-    if (!fs.existsSync(join(location, file))) {
-      fs.mkdirSync(join(location, file), { recursive: true });
+    if (!fs.existsSync(join(DATA_DIR, file))) {
+      fs.mkdirSync(join(DATA_DIR, file), { recursive: true });
     }
   });
 }
