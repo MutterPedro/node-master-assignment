@@ -2,11 +2,10 @@ const https = require('https');
 const querystring = require('querystring');
 
 const { toBase64 } = require('./encode');
-const { MAILGUN_SECRET } = require('./environment');
+const { MAILGUN_SECRET, MAILGUN_DOMAIN } = require('./environment');
 
 const MAILGUN_URL = 'https://api.mailgun.net';
-const MAILGUN_FROM =
-  'Mailgun Sandbox <mailgun@sandbox07d7d7c1755542219ac69e7359e4ea20.mailgun.org>';
+const MAILGUN_FROM = `Mailgun Sandbox <mailgun@${MAILGUN_DOMAIN}>`; // TODO: change domain to env var
 
 function sendEmail(to, subject, text) {
   return new Promise((resolve, reject) => {
@@ -19,7 +18,7 @@ function sendEmail(to, subject, text) {
 
     const options = {
       method: 'POST',
-      path: '/v3/sandbox07d7d7c1755542219ac69e7359e4ea20.mailgun.org/messages',
+      path: `/v3/${MAILGUN_DOMAIN}/messages`,
       headers: {
         Authorization: `Basic ${toBase64(`api:${MAILGUN_SECRET}`)}`,
         'Content-Type': 'application/x-www-form-urlencoded',
