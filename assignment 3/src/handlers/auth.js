@@ -33,7 +33,8 @@ async function login(req) {
 }
 
 async function logout(req) {
-  if (!(await isLoggedIn(req))) {
+  const { token } = await isLoggedIn(req);
+  if (!token) {
     return {
       status: 422,
       data: { message: 'already logged out' },

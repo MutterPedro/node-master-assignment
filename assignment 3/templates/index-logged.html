@@ -41,12 +41,7 @@
           </button>
         </p>
         <p>
-          <button
-            onclick="document.getElementById('contact').style.display='block'"
-            class="w3-button w3-black"
-          >
-            logout
-          </button>
+          <button onclick="logout()" class="w3-button w3-black">logout</button>
         </p>
         <p>
           <button
@@ -172,6 +167,22 @@
         document.getElementById(
           'total-amount-display',
         ).innerHTML = `$${getLocalTotal()}`;
+      }
+
+      async function logout() {
+        const result = await fetch('/logout', {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${window.localStorage.getItem('token')}`,
+          },
+        });
+
+        if (result.status === 204) {
+          alert('Logged out! Returning to home screen');
+
+          window.localStorage.removeItem('token');
+          window.location.href = '/';
+        }
       }
 
       (async () => {
