@@ -81,6 +81,15 @@
           <h1>Pizzas</h1>
         </div>
         <div class="w3-container" id="menu-items-container"></div>
+        <div class="w3-container w3-black w3-display-container">
+          <span
+            class="w3-display-topright"
+            style="font-size: 35px; margin: 10px"
+            id="total-amount-display"
+            >$0</span
+          >
+          <h1>Total</h1>
+        </div>
       </div>
     </div>
 
@@ -146,6 +155,24 @@
       if (!window.localStorage.getItem('token')) {
         window.location.href = '/';
       }
+      const localCart = {};
+      let items = {};
+
+      function getLocalTotal() {
+        return Object.keys(localCart).reduce((total, key) => {
+          const amount = localCart[key];
+          return total + amount * items[key].price;
+        }, 0);
+      }
+
+      function updateLocalCart(key) {
+        localCart[key] = (localCart[key] || 0) + 1;
+
+        document.getElementById(`local-cart-${key}`).innerHTML = localCart[key];
+        document.getElementById(
+          'total-amount-display',
+        ).innerHTML = `$${getLocalTotal()}`;
+      }
 
       (async () => {
         const result = await fetch('/items', {
@@ -155,13 +182,33 @@
         });
 
         if (result.status === 200) {
-          const items = await result.json();
+          items = await result.json();
 
           Object.keys(items).forEach((key) => {
             const item = items[key];
-            const itemHtml = `<h5>${item.name} <b>$${item.price.toFixed(
-              2,
-            )}</b></h5>`;
+            const itemHtml = `
+        <h5 style="
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-content: flex-start;
+          align-items: center;
+        ">${item.name} <b style="
+          display: flex;
+          align-content: center;
+          justify-content: space-between;
+          width: 15%;
+      ">$${item.price.toFixed(2)} <span onclick="updateLocalCart('${key}')"
+          style="
+            font-size: 20px;
+            cursor: pointer;
+            color: #FFF;
+            background-color: #000;
+            border-radius: 50%;
+            padding: 0px 10px;"
+          >+</span><div id='local-cart-${key}'>${
+              localCart[key] || 0
+            }</div></b></h5>`;
 
             document.getElementById('menu-items-container').innerHTML +=
               itemHtml;
