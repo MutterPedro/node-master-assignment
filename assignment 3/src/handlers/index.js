@@ -7,6 +7,7 @@ const { createUser, updateUser, deleteUser } = require('./user');
 const handlers = {
   get: {
     '/': templateHandler(Templates.Home),
+    logged: templateHandler(Templates.LoggedHome),
     items: getItems,
   },
   post: {

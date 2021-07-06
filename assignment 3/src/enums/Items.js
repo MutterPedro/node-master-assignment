@@ -4,7 +4,7 @@ module.exports = Object.freeze({
     name: 'Peperoni',
   },
   B_0002: {
-    price: 13,
+    price: 35,
     name: 'Peperoni with Cheddar',
   },
   B_0003: {
