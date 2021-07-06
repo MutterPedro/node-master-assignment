@@ -44,10 +44,7 @@
           <button onclick="logout()" class="w3-button w3-black">logout</button>
         </p>
         <p>
-          <button
-            onclick="document.getElementById('contact').style.display='block'"
-            class="w3-button w3-black"
-          >
+          <button onclick="checkout()" class="w3-button w3-black">
             finish order
           </button>
         </p>
@@ -76,7 +73,10 @@
           <h1>Pizzas</h1>
         </div>
         <div class="w3-container" id="menu-items-container"></div>
-        <div class="w3-container w3-black w3-display-container">
+        <div
+          class="w3-container w3-black w3-display-container"
+          style="height: 100px"
+        >
           <span
             class="w3-display-topright"
             style="font-size: 35px; margin: 10px"
@@ -84,68 +84,15 @@
             >$0</span
           >
           <h1>Total</h1>
+          <span
+            onclick="addItems()"
+            class="w3-button w3-display-bottomright w3-large"
+            >confirm</span
+          >
         </div>
       </div>
     </div>
 
-    <!-- Contact Modal -->
-    <div id="contact" class="w3-modal">
-      <div class="w3-modal-content w3-animate-zoom">
-        <div class="w3-container w3-black">
-          <span
-            onclick="document.getElementById('contact').style.display='none'"
-            class="w3-button w3-display-topright w3-large"
-            >x</span
-          >
-          <h1>Contact</h1>
-        </div>
-        <div class="w3-container">
-          <p>
-            Reserve a table, ask for today's special or just send us a message:
-          </p>
-          <form action="/action_page.php" target="_blank">
-            <p>
-              <input
-                class="w3-input w3-padding-16 w3-border"
-                type="text"
-                placeholder="Name"
-                required
-                name="Name"
-              />
-            </p>
-            <p>
-              <input
-                class="w3-input w3-padding-16 w3-border"
-                type="number"
-                placeholder="How many people"
-                required
-                name="People"
-              />
-            </p>
-            <p>
-              <input
-                class="w3-input w3-padding-16 w3-border"
-                type="datetime-local"
-                placeholder="Date and time"
-                required
-                name="date"
-                value="2020-11-16T20:00"
-              />
-            </p>
-            <p>
-              <input
-                class="w3-input w3-padding-16 w3-border"
-                type="text"
-                placeholder="Message \ Special requirements"
-                required
-                name="Message"
-              />
-            </p>
-            <p><button class="w3-button" type="submit">SEND MESSAGE</button></p>
-          </form>
-        </div>
-      </div>
-    </div>
     <script type="application/javascript">
       if (!window.localStorage.getItem('token')) {
         window.location.href = '/';
@@ -182,6 +129,52 @@
 
           window.localStorage.removeItem('token');
           window.location.href = '/';
+        }
+      }
+
+      async function addItems() {
+        const promises = Object.keys(localCart).map(async (key) => {
+          const result = await fetch('/item', {
+            method: 'PUT',
+            body: JSON.stringify({
+              code: key,
+              amount: localCart[key],
+            }),
+            headers: {
+              authorization: `Bearer ${window.localStorage.getItem('token')}`,
+            },
+          });
+        });
+
+        Promise.all(promises)
+          .then(() => {
+            alert('Success! Order confirmed!');
+            document.getElementById('menu').style.display = 'none';
+          })
+          .catch((e) => {
+            console.error(e);
+            alert('Failed to add the items');
+          });
+      }
+
+      async function checkout() {
+        if (confirm(`The total will be $${getLocalTotal()}`)) {
+          const result = await fetch('/checkout', {
+            method: 'POST',
+            headers: {
+              authorization: `Bearer ${window.localStorage.getItem('token')}`,
+            },
+          });
+
+          if (result.status === 200) {
+            alert('Success! Order confirmed!');
+
+            localCart = {};
+          } else {
+            alert(
+              'Failed to finish your order! Check if you add any items to the cart',
+            );
+          }
         }
       }
 
