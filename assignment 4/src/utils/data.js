@@ -8,7 +8,7 @@ function generateId() {
   return `${Date.now()}-${Math.floor((Math.random() + 1) * 10e10)}`;
 }
 
-function buildPath(file, id) {
+function buildPath(file, id = '') {
   return join(DATA_DIR, file, id);
 }
 
@@ -104,4 +104,29 @@ function findOne(file, id) {
   });
 }
 
-module.exports = { insert, initFolder, update, destroy, findOne };
+function findAll(file) {
+  const path = buildPath(file);
+  if (!fs.existsSync(path)) {
+    return null;
+  }
+
+  return new Promise((resolve, reject) => {
+    fs.readdir(path, (err, fileNames) => {
+      if (err) {
+        reject(err);
+
+        return;
+      }
+
+      const data = fileNames.map((filename) => {
+        const raw = fs.readFileSync(buildPath(file, filename));
+
+        return JSON.parse(raw.toString());
+      });
+
+      resolve(data);
+    });
+  });
+}
+
+module.exports = { insert, initFolder, update, destroy, findOne, findAll };

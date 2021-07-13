@@ -12,7 +12,7 @@ async function createUser(req) {
     };
   }
 
-  const user = { name, email, address, password };
+  const user = { name, email, address, password, timestamp: Date.now() };
   const newUser = await insert(Files.User, user, toBase64(email));
 
   return {

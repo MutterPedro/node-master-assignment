@@ -133,7 +133,7 @@
       }
 
       async function addItems() {
-        const promises = Object.keys(localCart).map(async (key) => {
+        for (const key of Object.keys(localCart)) {
           const result = await fetch('/item', {
             method: 'PUT',
             body: JSON.stringify({
@@ -144,17 +144,10 @@
               authorization: `Bearer ${window.localStorage.getItem('token')}`,
             },
           });
-        });
+        }
 
-        Promise.all(promises)
-          .then(() => {
-            alert('Success! Order confirmed!');
-            document.getElementById('menu').style.display = 'none';
-          })
-          .catch((e) => {
-            console.error(e);
-            alert('Failed to add the items');
-          });
+        alert('Success! Order confirmed!');
+        document.getElementById('menu').style.display = 'none';
       }
 
       async function checkout() {

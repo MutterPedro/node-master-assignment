@@ -2,6 +2,7 @@ const readline = require('readline');
 
 const help = require('./help');
 const menu = require('./menu');
+const { orderDetail, listDayOrders } = require('./orders');
 
 const interface = readline.createInterface({
   input: process.stdin,
@@ -15,8 +16,8 @@ function finish() {
 }
 
 function init() {
-  interface.on('line', (str) => {
-    processCommand(str);
+  interface.on('line', async (str) => {
+    await processCommand(str);
     interface.prompt();
   });
 
@@ -28,11 +29,13 @@ function init() {
   interface.prompt();
 }
 
-function processCommand(raw = '') {
+async function processCommand(raw = '') {
   const commands = {
     help,
     man: help,
     menu,
+    'detail order': orderDetail,
+    orders: listDayOrders,
   };
 
   const str = raw.trim().toLowerCase();
@@ -40,11 +43,12 @@ function processCommand(raw = '') {
     return;
   }
 
-  const command = commands[str];
+  const command =
+    commands[Object.keys(commands).find((key) => str.includes(key))];
   if (command) {
-    command(str);
+    await command(str);
   } else {
-    console.error(`command ${str} not found. Type 'help' for instructions`);
+    console.error(`command "${str}" not found. Type 'help' for instructions`);
   }
 }
 

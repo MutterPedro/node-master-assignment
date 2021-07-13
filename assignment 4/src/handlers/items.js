@@ -89,7 +89,14 @@ async function checkout(req) {
   Total: ${cart.total} USD`,
   );
 
-  await destroy(Files.Cart, id);
+  await Promise.all([
+    destroy(Files.Cart, id),
+    insert(Files.Order, {
+      items: cart.items,
+      total: cart.total,
+      timestamp: Date.now(),
+    }),
+  ]);
 
   return {
     status: 200,
