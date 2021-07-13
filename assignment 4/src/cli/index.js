@@ -1,6 +1,7 @@
 const readline = require('readline');
 
 const help = require('./help');
+const menu = require('./menu');
 
 const interface = readline.createInterface({
   input: process.stdin,
@@ -31,7 +32,7 @@ function processCommand(raw = '') {
   const commands = {
     help,
     man: help,
-    menu: console.log.bind(this, 'Show a menu here!'),
+    menu,
   };
 
   const str = raw.trim().toLowerCase();
@@ -43,7 +44,7 @@ function processCommand(raw = '') {
   if (command) {
     command(str);
   } else {
-    console.error(`command ${str} not found`);
+    console.error(`command ${str} not found. Type 'help' for instructions`);
   }
 }
 
