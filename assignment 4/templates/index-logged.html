@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+  <title>Pizza Hot</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Raleway"
+  />
+  <link rel="icon" type="image/x-icon" href="/public/favicon.ico" />
+  <style>
+    body,
+    h1,
+    h5 {
+      font-family: 'Raleway', sans-serif;
+    }
+    body,
+    html {
+      height: 100%;
+    }
+    .bgimg {
+      background-image: url('/public/background.jpg');
+      min-height: 100%;
+      background-position: center;
+      background-size: cover;
+    }
+  </style>
+  <body>
+    <div class="bgimg w3-display-container w3-text-white">
+      <div class="w3-display-middle w3-jumbo">
+        <p>🍕😍</p>
+      </div>
+      <div class="w3-display-topleft w3-container w3-xlarge">
+        <p>
+          <button
+            onclick="document.getElementById('menu').style.display='block'"
+            class="w3-button w3-black"
+          >
+            menu
+          </button>
+        </p>
+        <p>
+          <button onclick="logout()" class="w3-button w3-black">logout</button>
+        </p>
+        <p>
+          <button onclick="checkout()" class="w3-button w3-black">
+            finish order
+          </button>
+        </p>
+      </div>
+      <div class="w3-display-bottomleft w3-container">
+        <p class="w3-xlarge">monday - friday 10-23 | saturday 14-02</p>
+        <p class="w3-large">42 village St, New York</p>
+        <p>
+          powered by
+          <a href="https://www.w3schools.com/w3css/default.asp" target="_blank"
+            >w3.css</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- Menu Modal -->
+    <div id="menu" class="w3-modal">
+      <div class="w3-modal-content w3-animate-zoom">
+        <div class="w3-container w3-black w3-display-container">
+          <span
+            onclick="document.getElementById('menu').style.display='none'"
+            class="w3-button w3-display-topright w3-large"
+            >x</span
+          >
+          <h1>Pizzas</h1>
+        </div>
+        <div class="w3-container" id="menu-items-container"></div>
+        <div
+          class="w3-container w3-black w3-display-container"
+          style="height: 100px"
+        >
+          <span
+            class="w3-display-topright"
+            style="font-size: 35px; margin: 10px"
+            id="total-amount-display"
+            >$0</span
+          >
+          <h1>Total</h1>
+          <span
+            onclick="addItems()"
+            class="w3-button w3-display-bottomright w3-large"
+            >confirm</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <script type="application/javascript">
+      if (!window.localStorage.getItem('token')) {
+        window.location.href = '/';
+      }
+      const localCart = {};
+      let items = {};
+
+      function getLocalTotal() {
+        return Object.keys(localCart).reduce((total, key) => {
+          const amount = localCart[key];
+          return total + amount * items[key].price;
+        }, 0);
+      }
+
+      function updateLocalCart(key) {
+        localCart[key] = (localCart[key] || 0) + 1;
+
+        document.getElementById(`local-cart-${key}`).innerHTML = localCart[key];
+        document.getElementById(
+          'total-amount-display',
+        ).innerHTML = `$${getLocalTotal()}`;
+      }
+
+      async function logout() {
+        const result = await fetch('/logout', {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${window.localStorage.getItem('token')}`,
+          },
+        });
+
+        if (result.status === 204) {
+          alert('Logged out! Returning to home screen');
+
+          window.localStorage.removeItem('token');
+          window.location.href = '/';
+        }
+      }
+
+      async function addItems() {
+        const promises = Object.keys(localCart).map(async (key) => {
+          const result = await fetch('/item', {
+            method: 'PUT',
+            body: JSON.stringify({
+              code: key,
+              amount: localCart[key],
+            }),
+            headers: {
+              authorization: `Bearer ${window.localStorage.getItem('token')}`,
+            },
+          });
+        });
+
+        Promise.all(promises)
+          .then(() => {
+            alert('Success! Order confirmed!');
+            document.getElementById('menu').style.display = 'none';
+          })
+          .catch((e) => {
+            console.error(e);
+            alert('Failed to add the items');
+          });
+      }
+
+      async function checkout() {
+        if (confirm(`The total will be $${getLocalTotal()}`)) {
+          const result = await fetch('/checkout', {
+            method: 'POST',
+            headers: {
+              authorization: `Bearer ${window.localStorage.getItem('token')}`,
+            },
+          });
+
+          if (result.status === 200) {
+            alert('Success! Order confirmed!');
+
+            localCart = {};
+          } else {
+            alert(
+              'Failed to finish your order! Check if you add any items to the cart',
+            );
+          }
+        }
+      }
+
+      (async () => {
+        const result = await fetch('/items', {
+          headers: {
+            authorization: `Bearer ${window.localStorage.getItem('token')}`,
+          },
+        });
+
+        if (result.status === 200) {
+          items = await result.json();
+
+          Object.keys(items).forEach((key) => {
+            const item = items[key];
+            const itemHtml = `
+        <h5 style="
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-content: flex-start;
+          align-items: center;
+        ">${item.name} <b style="
+          display: flex;
+          align-content: center;
+          justify-content: space-between;
+          width: 15%;
+      ">$${item.price.toFixed(2)} <span onclick="updateLocalCart('${key}')"
+          style="
+            font-size: 20px;
+            cursor: pointer;
+            color: #FFF;
+            background-color: #000;
+            border-radius: 50%;
+            padding: 0px 10px;"
+          >+</span><div id='local-cart-${key}'>${
+              localCart[key] || 0
+            }</div></b></h5>`;
+
+            document.getElementById('menu-items-container').innerHTML +=
+              itemHtml;
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

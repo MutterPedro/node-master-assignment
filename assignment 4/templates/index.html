@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <title>Pizza Hot</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Raleway"
+  />
+  <link rel="icon" type="image/x-icon" href="/public/favicon.ico" />
+  <style>
+    body,
+    h1,
+    h5 {
+      font-family: 'Raleway', sans-serif;
+    }
+    body,
+    html {
+      height: 100%;
+    }
+    .bgimg {
+      background-image: url('/public/background.jpg');
+      min-height: 100%;
+      background-position: center;
+      background-size: cover;
+    }
+  </style>
+  <body>
+    <div class="bgimg w3-display-container w3-text-white">
+      <div class="w3-display-middle w3-jumbo">
+        <p>🍕😍</p>
+      </div>
+      <div class="w3-display-topleft w3-container w3-xlarge">
+        <p>
+          <button
+            onclick="document.getElementById('signup').style.display='block'"
+            class="w3-button w3-black"
+          >
+            sign up
+          </button>
+        </p>
+        <p>
+          <button
+            onclick="document.getElementById('login').style.display='block'"
+            class="w3-button w3-black"
+          >
+            login
+          </button>
+        </p>
+      </div>
+      <div class="w3-display-bottomleft w3-container">
+        <p class="w3-xlarge">monday - friday 10-23 | saturday 14-02</p>
+        <p class="w3-large">42 village St, New York</p>
+        <p>
+          powered by
+          <a href="https://www.w3schools.com/w3css/default.asp" target="_blank"
+            >w3.css</a
+          >
+        </p>
+      </div>
+    </div>
+    <!-- Login Modal -->
+    <div id="login" class="w3-modal">
+      <div class="w3-modal-content w3-animate-zoom">
+        <div class="w3-container w3-black">
+          <span
+            onclick="document.getElementById('login').style.display='none'"
+            class="w3-button w3-display-topright w3-large"
+            >x</span
+          >
+          <h1>Login</h1>
+        </div>
+        <div class="w3-container">
+          <p>Login to make your order:</p>
+          <form id="login-form">
+            <p>
+              <input
+                class="w3-input w3-padding-16 w3-border"
+                type="email"
+                placeholder="E-mail"
+                required
+                name="email"
+              />
+            </p>
+            <p>
+              <input
+                class="w3-input w3-padding-16 w3-border"
+                type="password"
+                placeholder="Password"
+                required
+                name="password"
+              />
+            </p>
+            <p><button class="w3-button" type="submit">ENTER</button></p>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Sign Up Modal -->
+    <div id="signup" class="w3-modal">
+      <div class="w3-modal-content w3-animate-zoom">
+        <div class="w3-container w3-black">
+          <span
+            onclick="document.getElementById('signup').style.display='none'"
+            class="w3-button w3-display-topright w3-large"
+            >x</span
+          >
+          <h1>Sign Up</h1>
+        </div>
+        <div class="w3-container">
+          <p>Please, sign up and make your order:</p>
+          <form id="signup-form">
+            <p>
+              <input
+                class="w3-input w3-padding-16 w3-border"
+                type="text"
+                placeholder="Name"
+                required
+                name="name"
+              />
+            </p>
+            <p>
+              <input
+                class="w3-input w3-padding-16 w3-border"
+                type="email"
+                placeholder="E-mail"
+                required
+                name="email"
+              />
+            </p>
+            <p>
+              <input
+                class="w3-input w3-padding-16 w3-border"
+                type="text"
+                placeholder="Address"
+                required
+                name="address"
+              />
+            </p>
+            <p>
+              <input
+                class="w3-input w3-padding-16 w3-border"
+                type="password"
+                placeholder="Password"
+                required
+                name="password"
+              />
+            </p>
+            <p>
+              <button class="w3-button" type="submit">REGISTER</button>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script type="application/javascript">
+      document
+        .getElementById('signup-form')
+        .addEventListener('submit', async function signUp(evt) {
+          evt.preventDefault();
+
+          const data = {
+            name: evt.target.elements['name'].value,
+            email: evt.target.elements['email'].value,
+            address: evt.target.elements['address'].value,
+            password: evt.target.elements['password'].value,
+          };
+
+          const result = await fetch('/user', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            cache: 'no-cache',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (result.status === 201) {
+            alert('User created successfully!\nNow, please login');
+          } else {
+            alert('Failed to create the user');
+          }
+        });
+
+      document
+        .getElementById('login-form')
+        .addEventListener('submit', async function login(evt) {
+          evt.preventDefault();
+
+          const data = {
+            email: evt.target.elements['email'].value,
+            password: evt.target.elements['password'].value,
+          };
+
+          const result = await fetch('/login', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            cache: 'no-cache',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (result.status === 200) {
+            alert('Welcome!');
+            const { token } = await result.json();
+
+            window.localStorage.setItem('token', token);
+            window.location.href = '/logged';
+          } else {
+            alert('Invalid e-mail or password');
+          }
+        });
+      if (window.localStorage.getItem('token')) {
+        window.location.href = '/logged';
+      }
+    </script>
+  </body>
+</html>
