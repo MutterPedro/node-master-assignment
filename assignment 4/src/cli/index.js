@@ -3,6 +3,7 @@ const readline = require('readline');
 const help = require('./help');
 const menu = require('./menu');
 const { orderDetail, listDayOrders } = require('./orders');
+const { userDetail, listDayUsers } = require('./users');
 
 const interface = readline.createInterface({
   input: process.stdin,
@@ -36,6 +37,8 @@ async function processCommand(raw = '') {
     menu,
     'detail order': orderDetail,
     orders: listDayOrders,
+    'detail user': userDetail,
+    users: listDayUsers,
   };
 
   const str = raw.trim().toLowerCase();
