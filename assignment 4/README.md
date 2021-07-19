@@ -1,4 +1,4 @@
-# Node Master - Assignment 3
+# Node Master - Assignment 4
 
 ## Pizza Delivery API
 
@@ -17,7 +17,7 @@ With the following endpoints you are able to:
 
 ## Table of content
 
-- [Node Master - Assignment 3](#node-master---assignment-3)
+- [Node Master - Assignment 4](#node-master---assignment-4)
   - [Pizza Delivery API](#pizza-delivery-api)
   - [Table of content](#table-of-content)
   - [Endpoints](#endpoints)
